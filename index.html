@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[TinNav] 浏览器导航</title>
+    <link rel="stylesheet" href="static/style.css">
+    <link rel="stylesheet" href="static/expand.css">
+    <link rel="stylesheet" href="static/collapse.css">
+</head>
+
+<body>
+    <div id="slide-bar"></div>
+
+    <img id="to-top" src="img/rocket.svg" alt="返回顶部">
+
+    <div class="nick">Tinger</div>
+
+    <div class="search-container">
+        <div class="input-container">
+            <div class="engines-container">
+                <img class="engine" src="img/google.svg" alt="google">
+                <img class="engine" src="img/bing.svg" alt="bing">
+                <img class="engine" src="img/baidu.svg" alt="baidu">
+                <img class="engine" id="engine" src="img/baidu.svg" alt="baidu">
+            </div>
+            <input id="search-content" type="text" autocomplete="off" placeholder="百度一下，你就知道！">
+            <img id="search-image" src="img/search.svg" alt="search">
+        </div>
+        <div id="relate-container">
+            <div id="local-relate"></div>
+            <div id="engine-relate"></div>
+        </div>
+    </div>
+
+    <div class="link-blocks-container">
+        <div class="link-blocks-title-container">
+            <div class="link-blocks-title">快捷导航</div>
+            <div class="link-blocks-tip">可推拽排序</div>
+            <div class="link-blocks-actions">
+                <svg id="link-block-add" class="action-icon" alt="img/new.svg" viewBox="0 0 1024 1024">
+                    <path
+                        d="M512 1024C229.238154 1024 0 794.761846 0 512S229.238154 0 512 0s512 229.238154 512 512-229.238154 512-512 512z m236.307692-551.384615H551.384615V275.692308a39.384615 39.384615 0 1 0-78.76923 0v196.923077H275.692308a39.384615 39.384615 0 1 0 0 78.76923h196.923077v196.923077a39.384615 39.384615 0 1 0 78.76923 0V551.384615h196.923077a39.384615 39.384615 0 0 0 0-78.76923z" />
+                </svg>
+                <svg id="link-blocks-collapse" class="action-icon" alt="img/collapse.svg" viewBox="0 0 1024 1024">
+                    <path
+                        d="M758.613333 465.493333l-221.013333 235.52a35.84 35.84 0 0 1-52.48 0L264.533333 465.066667a35.84 35.84 0 1 1 52.48-49.066667L512 623.786667l194.56-207.36a35.84 35.84 0 1 1 52.48 49.066666zM512 0a512 512 0 1 0 512 512A512 512 0 0 0 512 0z" />
+                </svg>
+            </div>
+        </div>
+        <div id="link-blocks">
+            <div class="link-block-container">
+                <div class="link-block-title-container">
+                    <div class="link-block-title">实用工具</div>
+                    <div class="link-block-actions">
+                        <svg class="action-icon" alt="img/new.svg" viewBox="0 0 1024 1024">
+                            <path
+                                d="M810.666667 490.666667v42.666666a21.333333 21.333333 0 0 1-21.333334 21.333334H554.666667v234.666666a21.333333 21.333333 0 0 1-21.333334 21.333334h-42.666666a21.333333 21.333333 0 0 1-21.333334-21.333334V554.666667H234.666667a21.333333 21.333333 0 0 1-21.333334-21.333334v-42.666666a21.333333 21.333333 0 0 1 21.333334-21.333334H469.333333V234.666667a21.333333 21.333333 0 0 1 21.333334-21.333334h42.666666a21.333333 21.333333 0 0 1 21.333334 21.333334V469.333333h234.666666a21.333333 21.333333 0 0 1 21.333334 21.333334z" />
+                        </svg>
+                        <svg class="action-icon" alt="img/collapse.svg" viewBox="0 0 1024 1024">
+                            <path
+                                d="M60.586667 273.322667c23.893333-23.082667 62.677333-23.082667 86.613333 0L512 625.365333l364.8-352.042666c23.936-23.082667 62.72-23.082667 86.613333 0 23.893333 23.04 23.893333 60.458667 0 83.541333l-408.106666 393.813333c-23.893333 23.082667-62.72 23.082667-86.613334 0L60.586667 356.864a57.6 57.6 0 0 1 0-83.541333z" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="links">
+                    <div class="link">
+                        <!-- TODO -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info">
+        [TinNav] 版权所有 &copy; 2024 Tinger 保留所有权利
+    </div>
+</body>
+
+</html>
+
+<script src="static/base.js"></script>
+<script src="static/network.js"></script>
+<script src="static/script.js"></script>
