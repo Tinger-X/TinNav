@@ -1,3 +1,11 @@
 .link-blocks-container.collapse {
-    background-color: black;
+    & #link-blocks-collapse {
+        transform: rotateZ(90deg);
+    }
+
+    & .link-block-container.collapse {
+        & .link-block-collapse {
+            transform: rotateZ(90deg);
+        }
+    }
 }

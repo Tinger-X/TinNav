@@ -1,7 +1,10 @@
 :root {
-    --icon-size: 24px;
-    --time-action: 200ms;
-    --time-delay: 120ms;
+    --size-large: 30px;
+    --size-normal: 24px;
+    --size-small: 20px;
+    --time-slow: 500ms;
+    --time-normal: 300ms;
+    --time-fast: 120ms;
 }
 
 * {
@@ -13,6 +16,7 @@
 body {
     width: 100vw;
     min-height: 100vh;
+    background-image: linear-gradient(to top, #fad0c4 0%, #fad0c4 1%, #ffd1ff 100%);
 }
 
 body::-webkit-scrollbar {
@@ -30,19 +34,18 @@ body::-webkit-scrollbar {
 }
 
 #to-top {
-    --size: 30px;
     position: fixed;
-    bottom: calc(var(--size) * -1);
+    bottom: calc(var(--size-large) * -1);
     right: 50px;
-    width: var(--size);
-    height: var(--size);
+    width: var(--size-large);
+    height: var(--size-large);
     cursor: pointer;
-    transition: bottom 500ms;
+    transition: bottom var(--time-slow);
     z-index: 9999;
 }
 
 #to-top.show {
-    bottom: 50px;
+    bottom: 70px;
 }
 
 @keyframes bob {
@@ -67,19 +70,19 @@ body::-webkit-scrollbar {
 
 #to-top:hover {
     animation-name: bob-float, bob;
-    animation-duration: 200ms, 1000ms;
-    animation-delay: 0, 200ms;
+    animation-duration: var(--time-normal), calc(3 * var(--time-normal));
+    animation-delay: 0, var(--time-normal);
     animation-timing-function: ease-out, ease-in-out;
     animation-iteration-count: 1, infinite;
     animation-direction: normal, alternate;
 }
 
-.nick {
-    width: 100%;
-    text-align: center;
-    font-size: 88px;
-    font-weight: bold;
-    margin-top: 55px;
+.banner {
+    height: 120px;
+    -webkit-user-drag: none;
+    display: block;
+    object-fit: contain;
+    margin: 70px auto 0;
 }
 
 .search-container {
@@ -109,8 +112,8 @@ body::-webkit-scrollbar {
 
     & img {
         cursor: pointer;
-        width: var(--icon-size);
-        height: var(--icon-size);
+        width: var(--size-normal);
+        height: var(--size-normal);
         background-color: white;
     }
 }
@@ -119,13 +122,13 @@ body::-webkit-scrollbar {
     --distance: -45px;
     --ang45: calc(var(--distance) / sqrt(2));
     position: relative;
-    width: var(--icon-size);
-    height: var(--icon-size);
+    width: var(--size-normal);
+    height: var(--size-normal);
 }
 
 .engine {
     position: absolute;
-    transition: transform var(--time-action);
+    transition: transform var(--time-normal);
     border-radius: 4px;
 }
 
@@ -143,22 +146,22 @@ body::-webkit-scrollbar {
 }
 
 .engine:nth-child(1).show {
-    transition-delay: calc(0 * var(--time-delay));
+    transition-delay: calc(0 * var(--time-fast));
     transform: translateY(var(--distance)) scale(1);
 }
 
 .engine:nth-child(2).show {
-    transition-delay: calc(1 * var(--time-delay));
+    transition-delay: calc(1 * var(--time-fast));
     transform: translate(var(--ang45), var(--ang45)) scale(1);
 }
 
 .engine:nth-child(3).show {
-    transition-delay: calc(2 * var(--time-delay));
+    transition-delay: calc(2 * var(--time-fast));
     transform: translateX(var(--distance)) scale(1);
 }
 
 #search-content {
-    width: calc(100% - 2 * (var(--icon-size) + 4px));
+    width: calc(100% - 2 * (var(--size-normal) + 4px));
     padding: 0 10px;
     border: none;
     outline: none;
@@ -168,7 +171,7 @@ body::-webkit-scrollbar {
 }
 
 #search-image:hover {
-    transition: transform 200ms;
+    transition: transform var(--time-normal);
     transform: scale(0.9);
 }
 
@@ -199,11 +202,11 @@ body::-webkit-scrollbar {
 }
 
 .relate-item {
-    cursor: pointer;
     user-select: none;
     width: 100%;
     display: flex;
     align-items: center;
+    column-gap: 8px;
     padding: 4px 10px;
 }
 
@@ -224,31 +227,38 @@ body::-webkit-scrollbar {
 }
 
 .relate-icon {
-    width: 20px;
-    height: 20px;
-    margin-right: 8px;
+    width: var(--size-small);
+    height: var(--size-small);
 }
 
 .relate-text {
+    width: calc(100% - 2 * (8px + var(--size-small)));
     line-height: 32px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
+.relate-delete {
+    width: var(--size-small);
+    height: var(--size-small);
+    cursor: pointer;
+}
+
+.relate-delete:hover {
+    transform: scale(1.08);
+}
 
 .link-blocks-container {
-    --size: 20px;
     width: 80%;
-    margin: 0 auto 50px;
-    min-height: 1800px;
+    margin: 0 auto 20px;
+    min-height: calc(100vh - 312px);
     border: 1px solid black;
-    transition: all var(--time-action);
-    user-select: none;
+    transition: all var(--time-normal);
 
     & svg {
-        width: var(--size);
-        height: var(--size);
+        width: var(--size-small);
+        height: var(--size-small);
     }
 }
 
@@ -263,23 +273,24 @@ body::-webkit-scrollbar {
     padding: 2px 10px;
 }
 
+.link-blocks-title, .link-blocks-tip {
+    line-height: var(--size-small);
+}
+
 .link-blocks-tip {
     font-size: 0.9em;
     color: gray;
 }
 
-.link-blocks-actions {
+.link-blocks-actions, .link-block-actions {
     display: flex;
+    column-gap: 8px;
 }
 
-#link-block-add,
-#link-blocks-collapse {
+.link-blocks-actions>svg {
     fill: white;
     cursor: pointer;
-}
-
-#link-block-add {
-    margin-right: 8px;
+    transition: all var(--time-normal);
 }
 
 #link-block-add:hover {
@@ -288,6 +299,59 @@ body::-webkit-scrollbar {
 
 #link-blocks-collapse:hover {
     fill: #1296DB;
+}
+
+#link-blocks {
+    width: 100%;
+    padding: 2px 2px 5px;
+    row-gap: 5px;
+}
+
+.link-block-container {
+    width: 100%;
+}
+
+.link-block-title-container {
+    width: 100%;
+    padding: 2px 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    align-items: center;
+    background-color: whitesmoke;
+}
+
+.link-block-title {
+    border: none;
+    outline: none;
+    padding: 0 4px;
+    line-height: var(--size-small);
+}
+
+.link-block-title:focus {
+   outline: 1px solid black;
+}
+
+.link-block-actions>svg {
+    cursor: pointer;
+    transition: all var(--time-normal);
+}
+
+.link-block-delete {
+    fill: rgb(224, 16, 16);
+    transform: rotateZ(45deg);
+}
+
+.link-block-delete:hover {
+    transform: rotateZ(135deg);
+}
+
+.link-block-collapse {
+    fill: rgb(40, 40, 40);
+}
+
+.link-block-collapse:hover {
+    fill: skyblue;
 }
 
 .info {

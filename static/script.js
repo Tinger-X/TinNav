@@ -11,10 +11,10 @@ function slideBar() {
     const $slider = document.querySelector("#slide-bar"),
         $toTop = document.querySelector("#to-top");
     document.addEventListener("scroll", function () {
-        const scrollHeight = document.body.scrollHeight - window.innerHeight, scrollTop = window.scrollY;
+        const scrollHeight = document.body.scrollHeight - window.innerHeight, scrollTop = Math.min(window.scrollY, scrollHeight);
         $slider.style.width = `${(scrollTop / scrollHeight) * 100}%`;
 
-        if (scrollTop > window.screen.height * 0.5) {  // window.screen.height * 1.5
+        if (scrollTop > window.innerHeight * 0.5) {
             $toTop.classList.add("show");
         } else {
             $toTop.classList.remove("show");
@@ -83,6 +83,19 @@ function createRelate(local = true, text = "", fn) {
 
     $relate.appendChild($icon);
     $relate.appendChild($text);
+
+    if (local) {
+        const $delete = document.createElement("img");
+        $delete.setAttribute("src", "img/delete.svg");
+        $delete.setAttribute("alt", "delete");
+        $delete.classList.add("relate-delete");
+        $delete.addEventListener("click", e => {
+            Base.localDelete(text);
+            $relate.remove();
+            e.stopPropagation();
+        });
+        $relate.appendChild($delete);
+    }
 
     $relate.addEventListener("click", () => {
         fn && fn(text);
@@ -196,8 +209,17 @@ function search() {
     });
 }
 
+const DB_DATA = {
+
+};
+
+function linkBlocks() {
+
+}
+
 window.onload = function () {
     slideBar();
     engines();
     search();
+    linkBlocks();
 }
