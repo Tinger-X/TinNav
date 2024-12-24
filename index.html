@@ -7,7 +7,6 @@
     <title>『Tin Nav』 导航</title>
     <link rel="shortcut icon" href="img/icon.png" type="image/x-png">
     <link rel="stylesheet" href="static/style.css">
-    <link rel="stylesheet" href="static/collapse.css">
 </head>
 
 <body>
@@ -37,7 +36,6 @@
     <div class="link-blocks-container">
         <div class="link-blocks-title-container">
             <div class="link-blocks-title">快捷导航</div>
-            <div class="link-blocks-tip">可推拽排序</div>
             <div class="link-blocks-actions">
                 <svg id="link-block-add" class="action-icon" alt="img/new.svg" viewBox="0 0 1024 1024">
                     <path
@@ -50,15 +48,16 @@
             </div>
         </div>
         <div id="link-blocks">
-            <div class="link-block-container">
+            <div class="link-block-container expand">
                 <div class="link-block-title-container">
-                    <input type="text" class="link-block-title" value="[双击修改]" disabled>
+                    <input type="text" class="link-block-title" placeholder="[双击修改]" disabled>
+                    <div class="block-dragger"><img src="img/drag.svg" alt="drag"></div>
                     <div class="link-block-actions">
-                        <svg class="action-icon link-block-delete" alt="img/new.svg" viewBox="0 0 1024 1024">
+                        <svg class="link-block-delete" viewBox="0 0 1024 1024">
                             <path
                                 d="M512 1024C229.238154 1024 0 794.761846 0 512S229.238154 0 512 0s512 229.238154 512 512-229.238154 512-512 512z m236.307692-551.384615H551.384615V275.692308a39.384615 39.384615 0 1 0-78.76923 0v196.923077H275.692308a39.384615 39.384615 0 1 0 0 78.76923h196.923077v196.923077a39.384615 39.384615 0 1 0 78.76923 0V551.384615h196.923077a39.384615 39.384615 0 0 0 0-78.76923z" />
                         </svg>
-                        <svg class="action-icon link-block-collapse" alt="img/collapse.svg" viewBox="0 0 1024 1024">
+                        <svg class="link-block-collapse" viewBox="0 0 1024 1024">
                             <path
                                 d="M758.613333 465.493333l-221.013333 235.52a35.84 35.84 0 0 1-52.48 0L264.533333 465.066667a35.84 35.84 0 1 1 52.48-49.066667L512 623.786667l194.56-207.36a35.84 35.84 0 1 1 52.48 49.066666zM512 0a512 512 0 1 0 512 512A512 512 0 0 0 512 0z" />
                         </svg>
@@ -66,14 +65,26 @@
                 </div>
                 <div class="links">
                     <div class="link">
-                        <!-- TODO -->
+                        <div class="link-actions">
+                            <svg class="link-delete" viewBox="0 0 1024 1024">
+                                <path
+                                    d="M910.016 213.312h-148.928V113.92a49.664 49.664 0 0 0-49.664-49.664H313.92h-0.064a49.664 49.664 0 0 0-49.664 49.664v99.328H115.2a49.664 49.664 0 0 0 0 99.328h49.664V908.8c0 27.52 22.272 49.664 49.664 49.664h596.032a50.752 50.752 0 0 0 19.328-3.904 49.792 49.792 0 0 0 30.336-45.824V312.768v-0.128h49.664a49.6 49.6 0 0 0 0.128-99.328zM363.52 163.648h298.24v49.664H363.52v-49.664z m198.656 695.488H463.04V312.768v-0.128h99.136V859.136zM363.712 312.64V859.136H264.256V312.768v-0.128h99.456z m397.312 0.128v546.368h-99.456V312.768l-0.064-0.128h99.52v0.128z" />
+                            </svg>
+                            <svg class="link-edit" viewBox="0 0 1061 1024">
+                                <path d="M928 365.664a32 32 0 0 0-32 32V864a32 32 0 0 1-32 32H160a32 32 0 0 1-32-32V160a32 32 0 0 1 32-32h429.6a32 32 0 0 0 0-64H160a96 96 0 0 0-96 96v704a96 96 0 0 0 96 96h704a96 96 0 0 0 96-96V397.664a32 32 0 0 0-32-32z" /> <path d="M231.616 696.416a38.4 38.4 0 0 0 44.256 53.792l148-38.368L950.496 185.248 814.72 49.472 290.432 573.76l-58.816 122.656z m111.808-85.12L814.72 140l45.248 45.248-468.992 468.992-77.824 20.16 30.272-63.104z" />
+                            </svg>
+                        </div>
+                        <div class="link-info">
+                            <img class="link-icon" src="https://www.uupoop.com/favicon.ico" alt="icon">
+                            <div class="link-name">在线PS</div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="info">
+    <div class="footer">
         〖Tin Nav〗 版权所有 &copy; 2024 Tinger 保留所有权利，备案号：渝ICP备19002596号-2
     </div>
 </body>
@@ -82,4 +93,5 @@
 
 <script src="static/base.js"></script>
 <script src="static/network.js"></script>
+<script src="static/sortable.min.js"></script>
 <script src="static/script.js"></script>
