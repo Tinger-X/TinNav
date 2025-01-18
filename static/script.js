@@ -7,6 +7,7 @@ const EngineConf = {
 const $Engine = document.querySelector("#engine"),
     $SearchContent = document.querySelector("#search-content"),
     $LinkBlocks = document.querySelector("#link-blocks");
+const TinAlert = new Alert("#alert");
 
 function slideBar() {
     const $slider = document.querySelector("#slide-bar"),

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>INIT</title>
+</head>
+
+<body>
+  <p id="code"></p>
+  <p id="msg"></p>
+  <p id="token"></p>
+  <p id="detail"></p>
+  <script src="static/base.js"></script>
+  <script>
+    const $code = document.querySelector("#code"),
+      $msg = document.querySelector("#msg"),
+      $token = document.querySelector("#token"),
+      $detail = document.querySelector("#detail");
+    const net = new NetWork("https://nav-api.tinger.host", "Tin-Nav-Token");
+    net.init(res => {
+      $code.textContent = `【Status】：${res.code}`;
+      if (res.code === 200) {
+        $msg.textContent = "【Success】：初始化成功";
+        $token.textContent = `【Token】：${res.data.token}`;
+        $detail.textContent = `【Detail】：${JSON.stringify(res.data.detail)}`;
+      } else {
+        $msg.textContent = `【Error】：${res.msg}`;
+        $token.clear();
+        $detail.clear();
+      }
+    });
+  </script>
+</body>
+
+</html>
