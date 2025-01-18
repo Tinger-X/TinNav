@@ -18,7 +18,7 @@
       $msg = document.querySelector("#msg"),
       $token = document.querySelector("#token"),
       $detail = document.querySelector("#detail");
-    const net = new NetWork("https://nav-api.tinger.host", "Tin-Nav-Token");
+    const net = new NetWork("https://temp.tinger.host", "Tin-Nav-Token");
     net.init(res => {
       $code.textContent = `【Status】：${res.code}`;
       if (res.code === 200) {
