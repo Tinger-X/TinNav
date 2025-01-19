@@ -410,7 +410,7 @@ function handleBlockSortEnd(event) {
 }
 
 function linkBlocks() {
-  $LinkBlocks.innerHTML = "";
+  $LinkBlocks.clear();
   const $action_block_add = document.querySelector("#link-block-add");
   const $action_blocks_collapse = document.querySelector("#link-blocks-collapse");
   $action_block_add.addEventListener("click", () => {
@@ -435,6 +435,7 @@ function linkBlocks() {
   });
   TinManager.detail().then(detail => {
     SetEngine(detail[0]);
+    $LinkBlocks.clear();
     for (let index = 1; index < detail.length; ++index) {
       const [info, ...links] = detail[index];
       const $block = createBlock(index, info, links);
