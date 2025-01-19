@@ -1,52 +1,58 @@
 class NetWork {
-  #Server = "https://nav-api.tinger.host";  // 服务端api前缀，末尾不含`/`
-  #makeHeader() {
-    const token = Base.localTokenGet();
-    const header = {};
-    if (token !== null) {
-      header[Base.TokenName] = token;
-    }
-    return header;
+  #Server = null;
+  #Header = {};
+  constructor(server = null) {
+    this.#Server = server;
+  }
+  setServer(server) {
+    this.#Server = server;
+  }
+  setHeader(header) {
+    this.#Header = header;
+  }
+  init() {
+    return new PromiseEx((acc, rej) => {
+      fetch(`${this.#Server}/init`, {
+        method: "POST",
+        headers: this.#Header
+      }).then(res => res.json()).then(res => {
+        res.code === 200 ? acc(res.data) : rej(res.msg);
+      });
+    });
+  }
+  setEngine(engine) {
+    return new PromiseEx((acc, rej) => {
+      fetch(`${this.#Server}/engine?target=${engine}`, {
+        method: "POST",
+        headers: this.#Header
+      }).then(res => res.json()).then(res => res.code === 200 ? acc(res.data) : rej(res.msg));
+    });
   }
   relate(engine, query) {
-    if (query === undefined || query === "") return [];
-    if (!["baidu", "bing", "google"].includes(engine)) return [];
-    const url = `${this.#Server}/relate?engine=${engine}&query=${query}`;
-    return new Promise(accept => {
-      fetch(url).then(res => res.json()).then(res => accept(res));
+    return new PromiseEx((acc, rej) => {
+      fetch(
+        `${this.#Server}/relate?engine=${engine}&query=${query}`
+      ).then(res => res.json()).then(res => res.code === 200 ? acc(res.data) : rej(res.msg));
     });
   }
-  detail() {
-    return new Promise(accept => {
-      fetch(`${this.#Server}/links/detail`, {
-        headers: this.#makeHeader(),
-        method: "GET"
-      }).then(res => res.json()).then(res => accept(res));
-    });
-  }
-  updateCollapse(config) {
-    console.log(config);
-    const header = this.#makeHeader();
-    if (!header.hasOwnProperty(Base.TokenName)) {
+  collapse(opt) {
+    if (JSON.stringify(this.#Header) === "{}") {
       return;
     }
-    fetch(`${this.#Server}/links/collapse`, {
+    fetch(`${this.#Server}/block/collapse`, {
       method: "POST",
-      headers: header,
-      body: JSON.stringify(config)
+      headers: this.#Header,
+      body: JSON.stringify(opt)
     }).then(res => res.json()).then(res => console.log(res));
   }
-  register(name, pass) {
-    return new Promise(accept => {
-      fetch(`${this.#Server}/test`, {
-        method: "POST",
-        body: JSON.stringify({
-          name: name,
-          pass: Base.sha128(`${name}-${pass}`)
-        })
-      }).then(res => res.json()).then(res => accept(res));
+  detail() {
+    return new PromiseEx((acc, rej) => {
+      fetch(`${this.#Server}/detail`, {
+        method: "GET",
+        headers: this.#Header
+      }).then(res => res.json()).then(res => {
+        res.code === 200 ? acc(res.data) : rej(res.msg);
+      });
     });
   }
 }
-
-const Net = new NetWork();

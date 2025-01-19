@@ -12,23 +12,33 @@
   <p id="msg"></p>
   <p id="token"></p>
   <pre id="detail"></pre>
-  <script src="static/base.js"></script>
   <script>
     const $code = document.querySelector("#code"),
       $msg = document.querySelector("#msg"),
       $token = document.querySelector("#token"),
       $detail = document.querySelector("#detail");
-    const net = new NetWork("https://nav-api.tinger.host", "Tin-Nav-Token");
-    net.init(res => {
-      $code.textContent = `【Status】：${res.code}`;
+
+    window.open(`https://wx-api.tinger.host/oauth?target=${window.location.href}`);
+    window.addEventListener("message", event => {
+      const res = JSON.parse(event.data);
       if (res.code === 200) {
-        $msg.textContent = "【Success】：初始化成功";
-        $token.textContent = `【Token】：${res.data.token}`;
-        $detail.textContent = `【Detail】：${JSON.stringify(res.data.detail, null, 2)}`;
-      } else {
-        $msg.textContent = `【Error】：${res.msg}`;
-        $token.clear();
-        $detail.clear();
+        fetch("http://127.0.0.1:8787/init", {
+          method: "POST",
+          headers: {
+            "Tin-Nav-Token": res.data
+          }
+        }).then(res => res.json()).then(res => {
+          $code.textContent = `【Status】：${res.code}`;
+          if (res.code === 200) {
+            $msg.textContent = "【Success】：初始化成功";
+            $token.textContent = `【Token】：${res.data.token}`;
+            $detail.textContent = `【Detail】：${JSON.stringify(res.data.detail, null, 2)}`;
+          } else {
+            $msg.textContent = `【Error】：${res.msg}`;
+            $token.clear();
+            $detail.clear();
+          }
+        });
       }
     });
   </script>
