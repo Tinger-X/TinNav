@@ -68,7 +68,9 @@ function engines() {
 
   $engines.forEach($eng => {
     $eng.addEventListener("click", function () {
-      SetEngine(this.getAttribute("alt"));
+      const engine = this.getAttribute("alt");
+      SetEngine(engine);
+      TinManager.SetEngine(engine);
     });
     $eng.addEventListener("mouseenter", function () {
       if (timer !== null) {
