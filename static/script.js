@@ -70,7 +70,7 @@ function engines() {
     $eng.addEventListener("click", function () {
       const engine = this.getAttribute("alt");
       SetEngine(engine);
-      TinManager.SetEngine(engine);
+      TinManager.setEngine(engine);
     });
     $eng.addEventListener("mouseenter", function () {
       if (timer !== null) {
