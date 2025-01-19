@@ -481,22 +481,28 @@ body::-webkit-scrollbar {
 }
 
 .links {
-  display: grid;
-  gap: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 2px;
   padding: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  transition: all var(--time-fast);
+}
+
+.links:not(:has(.sortable-chosen)) .link {
+  transition: all var(--time-fast);
 }
 
 .link-block-container.expand .links {
-  grid-template-columns: repeat(auto-fit, 108px);
+  justify-content: center;
 }
 
 .link-block-container.collapse .links {
-  grid-template-columns: repeat(auto-fit, 60px);
+  justify-content: left;
 }
 
 .link {
-  width: 100%;
+  width: 108px;
   height: 118px;
   position: relative;
   user-select: none;
@@ -504,10 +510,12 @@ body::-webkit-scrollbar {
 }
 
 .link-block-container.expand .link {
+  width: 108px;
   height: 118px;
 }
 
 .link-block-container.collapse .link {
+  width: 60px;
   height: 60px;
 }
 
@@ -578,6 +586,8 @@ body::-webkit-scrollbar {
 }
 
 .link-add {
+  width: 108px;
+  height: 118px;
   user-select: none;
   display: flex;
   align-items: center;
