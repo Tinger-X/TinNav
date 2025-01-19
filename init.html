@@ -22,7 +22,7 @@
     window.addEventListener("message", event => {
       const res = JSON.parse(event.data);
       if (res.code === 200) {
-        fetch("http://127.0.0.1:8787/init", {
+        fetch("https://nav-api.tinger.host/init", {
           method: "POST",
           headers: {
             "Tin-Nav-Token": res.data
