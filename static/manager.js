@@ -3,7 +3,6 @@ class Manager {
   #Relate = new LocalRelate();
   #Detail = new LocalDetail();
   #Network = new NetWork();
-
   #onLoginResult = null;
 
   constructor(server, tokenName) {
@@ -64,16 +63,47 @@ class Manager {
   localRelateDelete(word) {
     this.#Relate.delete(word);
   }
-  collapse(opt) {
-    this.#Detail.collapse(opt);
-    this.#Network.collapse(opt);
-  }
   detail() {
     return new PromiseEx((acc, rej) => {
-      acc(this.#Detail.all());
+      acc(this.#Detail.detail());
       this.#Network.detail().then(res => {
         this.#Detail.update(res) && acc(res);
       }).catch(err => rej(err));
     });
+  }
+  // TODO
+  rank(opt) {
+    console.log("rank:", opt);
+    this.#Detail.rank(opt);
+    this.#Network.rank(opt);
+  }
+  collapse(opt) {
+    console.log("collapse:", opt);
+    this.#Detail.collapse(opt);
+    this.#Network.collapse(opt);
+  }
+  groupAdd(name) {
+    this.#Detail.groupAdd(name);
+    return this.#Network.groupAdd(name);
+  }
+  groupRename(gid, name) {
+    this.#Detail.groupRename(gid, name);
+    return this.#Network.groupRename(gid, name);
+  }
+  groupDelete(gid) {
+    this.#Detail.groupDelete(gid);
+    return this.#Network.groupDelete(gid);
+  }
+  linkAdd(info, gid) {
+    this.#Detail.linkAdd(info, gid);
+    return this.#Network.linkAdd(info, gid);
+  }
+  linkEdit(info, gid, lid) {
+    this.#Detail.linkEdit(info, gid, lid);
+    return this.#Network.linkEdit(info, gid, lid);
+  }
+  linkDelete(gid, lid) {
+    this.#Detail.linkDelete(gid, lid);
+    return this.#Network.linkDelete(gid, lid);
   }
 }

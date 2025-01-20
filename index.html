@@ -19,9 +19,37 @@
     </svg>
   </div>
 
+  <div id="confirm">
+    <div class="confirm-title">请注意</div>
+    <div class="confirm-text">此操作不可逆，是否继续？</div>
+    <div class="confirm-action">
+      <div class="confirm-yes">确&nbsp;&nbsp;定</div>
+      <div class="confirm-no">取&nbsp;&nbsp;消</div>
+    </div>
+  </div>
+
   <div id="slide-bar"></div>
 
   <div id="login-btn">点击登录</div>
+
+  <div id="link-detail-layer">
+    <div class="link-detail-container">
+      <div class="link-detail-title">添加快捷方式</div>
+      <label class="link-detail-line">
+        <div class="line-name">导航地址</div>
+        <input type="text" maxlength="128" class="input-url">
+      </label>
+      <label class="link-detail-line">
+        <div class="line-name">图标链接</div>
+        <input type="text" maxlength="128" class="input-icon">
+      </label>
+      <label class="link-detail-line">
+        <div class="line-name">显示名称</div>
+        <input type="text" maxlength="12" class="input-name">
+      </label>
+      <div class="link-detail-submit">提&nbsp;&nbsp;&nbsp;&nbsp;交</div>
+    </div>
+  </div>
 
   <img id="to-top" src="img/rocket.svg" alt="返回顶部">
 
@@ -44,21 +72,21 @@
     </div>
   </div>
 
-  <div class="link-blocks-container">
-    <div class="link-blocks-title-container">
-      <div class="link-blocks-title">快捷导航</div>
-      <div class="link-blocks-actions">
-        <svg id="link-block-add" class="action-icon" alt="img/new.svg" viewBox="0 0 1024 1024">
+  <div class="link-groups-container">
+    <div class="link-groups-title-container">
+      <div class="link-groups-title">快捷导航</div>
+      <div class="link-groups-actions">
+        <svg id="link-group-add" class="action-icon" alt="img/new.svg" viewBox="0 0 1024 1024">
           <path
             d="M512 1024C229.238154 1024 0 794.761846 0 512S229.238154 0 512 0s512 229.238154 512 512-229.238154 512-512 512z m236.307692-551.384615H551.384615V275.692308a39.384615 39.384615 0 1 0-78.76923 0v196.923077H275.692308a39.384615 39.384615 0 1 0 0 78.76923h196.923077v196.923077a39.384615 39.384615 0 1 0 78.76923 0V551.384615h196.923077a39.384615 39.384615 0 0 0 0-78.76923z" />
         </svg>
-        <svg id="link-blocks-collapse" class="action-icon" alt="img/collapse.svg" viewBox="0 0 1024 1024">
+        <svg id="link-groups-collapse" class="action-icon" alt="img/collapse.svg" viewBox="0 0 1024 1024">
           <path
             d="M758.613333 465.493333l-221.013333 235.52a35.84 35.84 0 0 1-52.48 0L264.533333 465.066667a35.84 35.84 0 1 1 52.48-49.066667L512 623.786667l194.56-207.36a35.84 35.84 0 1 1 52.48 49.066666zM512 0a512 512 0 1 0 512 512A512 512 0 0 0 512 0z" />
         </svg>
       </div>
     </div>
-    <div id="link-blocks"></div>
+    <div id="link-groups"></div>
   </div>
 
   <div class="footer">

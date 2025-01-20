@@ -4,17 +4,27 @@ const EngineConf = {
   bing: ["https://www.bing.com/search?q=", "有问题尽管问我..."],
   google: ["https://www.google.com/search?q=", "咕噜咕噜~"]
 };
+
 const $Engine = document.querySelector("#engine"),
   $SearchContent = document.querySelector("#search-content"),
-  $LinkBlocks = document.querySelector("#link-blocks");
-const TinAlert = new Alert("#alert");
-// const TinManager = new Manager("http://127.0.0.1:8787", "Tin-Nav-Token");
-const TinManager = new Manager("https://nav-api.tinger.host", "Tin-Nav-Token");
-const SetEngine = key => {
+  $LinkGroups = document.querySelector("#link-groups");
+
+const TinAlert = new Alert("#alert"),
+  TinConfirm = new Confirm("#confirm"),
+  TinDetail = new Detail("#link-detail-layer"),
+  TinManager = new Manager("https://nav-api.tinger.host", "Tin-Nav-Token");
+
+function setEngine(key, update = false) {
+  if (EngineConf._R_[1] === key) return;
   $Engine.setAttribute("src", `img/${key}.svg`);
   $Engine.setAttribute("alt", key);
   EngineConf._R_ = [EngineConf[key][0], key];
   $SearchContent.setAttribute("placeholder", EngineConf[key][1]);
+  if (update) TinManager.setEngine(key).catch(err => TinAlert.warn(err));
+}
+
+function childIndex($parent, $child) {
+  return Array.from($parent.children).indexOf($child);
 }
 
 function slideBar() {
@@ -68,9 +78,7 @@ function engines() {
 
   $engines.forEach($eng => {
     $eng.addEventListener("click", function () {
-      const engine = this.getAttribute("alt");
-      SetEngine(engine);
-      TinManager.setEngine(engine);
+      setEngine(this.getAttribute("alt"), true);
     });
     $eng.addEventListener("mouseenter", function () {
       if (timer !== null) {
@@ -244,146 +252,185 @@ function search() {
   });
 }
 
-function createLink(bid, lid, info) {
+function appendLink($group, $links, info) {
   const $link = document.createElement("div");
   $link.classList.add("link");
 
-  const $link_actions = document.createElement("div");
-  $link_actions.classList.add("link-actions");
-  const $action_delete = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  $action_delete.classList.add("link-delete");
-  $action_delete.setAttribute("viewBox", "0 0 1024 1024");
-  $action_delete.innerHTML = `<path d="M910.016 213.312h-148.928V113.92a49.664 49.664 0 0 0-49.664-49.664H313.92h-0.064a49.664 49.664 0 0 0-49.664 49.664v99.328H115.2a49.664 49.664 0 0 0 0 99.328h49.664V908.8c0 27.52 22.272 49.664 49.664 49.664h596.032a50.752 50.752 0 0 0 19.328-3.904 49.792 49.792 0 0 0 30.336-45.824V312.768v-0.128h49.664a49.6 49.6 0 0 0 0.128-99.328zM363.52 163.648h298.24v49.664H363.52v-49.664z m198.656 695.488H463.04V312.768v-0.128h99.136V859.136zM363.712 312.64V859.136H264.256V312.768v-0.128h99.456z m397.312 0.128v546.368h-99.456V312.768l-0.064-0.128h99.52v0.128z"/>`;
-  $action_delete.addEventListener("click", e => {
+  const $actions = document.createElement("div");
+  $actions.classList.add("link-actions");
+  const $delete = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  $delete.classList.add("link-delete");
+  $delete.setAttribute("viewBox", "0 0 1024 1024");
+  $delete.innerHTML = `<path d="M910.016 213.312h-148.928V113.92a49.664 49.664 0 0 0-49.664-49.664H313.92h-0.064a49.664 49.664 0 0 0-49.664 49.664v99.328H115.2a49.664 49.664 0 0 0 0 99.328h49.664V908.8c0 27.52 22.272 49.664 49.664 49.664h596.032a50.752 50.752 0 0 0 19.328-3.904 49.792 49.792 0 0 0 30.336-45.824V312.768v-0.128h49.664a49.6 49.6 0 0 0 0.128-99.328zM363.52 163.648h298.24v49.664H363.52v-49.664z m198.656 695.488H463.04V312.768v-0.128h99.136V859.136zM363.712 312.64V859.136H264.256V312.768v-0.128h99.456z m397.312 0.128v546.368h-99.456V312.768l-0.064-0.128h99.52v0.128z"/>`;
+  $delete.addEventListener("click", e => {
     e.stopPropagation();
-    console.log(`delete block[${bid}][${lid}]: ${info[0]}`);
+    TinConfirm.show({
+      text: `是否确认删除【${info[0]}】`
+    }).yes(() => {
+      TinManager.linkDelete(
+        childIndex($LinkGroups, $group),
+        childIndex($links, $link)
+      ).catch(err => TinAlert.warn(err));
+      $link.remove();
+    });
   });
-  $link_actions.appendChild($action_delete);
-  const $action_edit = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  $action_edit.classList.add("link-edit");
-  $action_edit.setAttribute("viewBox", "0 0 1024 1024");
-  $action_edit.innerHTML = `<path d="M928 365.664a32 32 0 0 0-32 32V864a32 32 0 0 1-32 32H160a32 32 0 0 1-32-32V160a32 32 0 0 1 32-32h429.6a32 32 0 0 0 0-64H160a96 96 0 0 0-96 96v704a96 96 0 0 0 96 96h704a96 96 0 0 0 96-96V397.664a32 32 0 0 0-32-32z"/><path d="M231.616 696.416a38.4 38.4 0 0 0 44.256 53.792l148-38.368L950.496 185.248 814.72 49.472 290.432 573.76l-58.816 122.656z m111.808-85.12L814.72 140l45.248 45.248-468.992 468.992-77.824 20.16 30.272-63.104z"/>`;
-  $action_edit.addEventListener("click", e => {
+  $actions.appendChild($delete);
+  const $edit = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  $edit.classList.add("link-edit");
+  $edit.setAttribute("viewBox", "0 0 1024 1024");
+  $edit.innerHTML = `<path d="M928 365.664a32 32 0 0 0-32 32V864a32 32 0 0 1-32 32H160a32 32 0 0 1-32-32V160a32 32 0 0 1 32-32h429.6a32 32 0 0 0 0-64H160a96 96 0 0 0-96 96v704a96 96 0 0 0 96 96h704a96 96 0 0 0 96-96V397.664a32 32 0 0 0-32-32z"/><path d="M231.616 696.416a38.4 38.4 0 0 0 44.256 53.792l148-38.368L950.496 185.248 814.72 49.472 290.432 573.76l-58.816 122.656z m111.808-85.12L814.72 140l45.248 45.248-468.992 468.992-77.824 20.16 30.272-63.104z"/>`;
+  $actions.appendChild($edit);
+  $link.appendChild($actions);
+
+  const $info = document.createElement("div");
+  $info.classList.add("link-info");
+  const $icon = document.createElement("img");
+  $icon.classList.add("link-icon");
+  $icon.setAttribute("src", info[2]);
+  $icon.setAttribute("alt", "icon");
+  $info.appendChild($icon);
+  const $name = document.createElement("div");
+  $name.classList.add("link-name");
+  $name.innerText = info[0];
+  $info.appendChild($name);
+  $link.appendChild($info);
+
+  $edit.addEventListener("click", e => {
     e.stopPropagation();
-    console.log(`edit block[${bid}][${lid}]: ${info[0]}`);
+    TinDetail.edit(info).then(res => {
+      info = res;
+      $name.innerText = res[0];
+      $icon.setAttribute("src", res[2]);
+      TinManager.linkEdit(
+        res,
+        childIndex($LinkGroups, $group),
+        childIndex($links, $link)
+      ).catch(err => TinAlert.warn(err));
+    });
   });
-  $link_actions.appendChild($action_edit);
-  $link.appendChild($link_actions);
-
-  const $link_info = document.createElement("div");
-  $link_info.classList.add("link-info");
-  const $link_icon = document.createElement("img");
-  $link_icon.classList.add("link-icon");
-  $link_icon.setAttribute("src", info[2]);
-  $link_icon.setAttribute("alt", "icon");
-  $link_info.appendChild($link_icon);
-  const $link_name = document.createElement("div");
-  $link_name.classList.add("link-name");
-  $link_name.innerText = info[0];
-  $link_info.appendChild($link_name);
-  $link.appendChild($link_info);
-
   $link.addEventListener("click", () => window.open(info[1], "_blank"));
-  return $link;
+  $links.appendChild($link);
 }
 
-function createLinkAdd(index) {
-  const $link_add = document.createElement("div");
-  $link_add.classList.add("link-add");
+function appendLinkAdd($group, $links) {
+  const $add = document.createElement("div");
+  $add.classList.add("link-add");
 
-  const $link_icon = document.createElement("img");
-  $link_icon.classList.add("link-icon");
-  $link_icon.setAttribute("src", "img/add.svg");
-  $link_icon.setAttribute("alt", "icon");
-  $link_add.appendChild($link_icon);
-  const $link_name = document.createElement("div");
-  $link_name.classList.add("link-name");
-  $link_name.innerText = "点击添加连接";
-  $link_add.appendChild($link_name);
+  const $icon = document.createElement("img");
+  $icon.classList.add("link-icon");
+  $icon.setAttribute("src", "img/add.svg");
+  $icon.setAttribute("alt", "icon");
+  $add.appendChild($icon);
+  const $name = document.createElement("div");
+  $name.classList.add("link-name");
+  $name.innerText = "点击添加连接";
+  $add.appendChild($name);
 
-  $link_add.addEventListener("click", () => {
-    console.log(`add new link to block[${index}]`);
+  $add.addEventListener("click", () => {
+    TinDetail.add().then(info => {
+      $add.remove();
+      appendLink($group, $links, info);
+      $links.appendChild($add);
+      TinManager.linkAdd(info, childIndex($LinkGroups, $group)).catch(err => TinAlert.warn(err));
+    });
   });
-  return $link_add;
-}
-
-function createBlock(index, info, links) {
-  const [collapse, name] = info;
-  const $block_container = document.createElement("div");
-  $block_container.classList.add("link-block-container");
-  const control_class = collapse === 1 ? "collapse" : "expand";
-  $block_container.classList.add(control_class);
-
-  const $title_container = document.createElement("div");
-  $title_container.classList.add("link-block-title-container");
-  const $block_title = document.createElement("input");
-  $block_title.classList.add("link-block-title");
-  $block_title.setAttribute("type", "text");
-  $block_title.setAttribute("placeholder", "[双击修改]");
-  $block_title.value = name || "";
-  $block_title.readOnly = true;
-  $block_title.addEventListener("dblclick", () => {
-    $block_title.readOnly = false;
-  });
-  $block_title.addEventListener("change", () => {
-    console.log(`change block[${index}].name to ${$block_title.value}`);
-  });
-  $block_title.addEventListener("blur", () => {
-    $block_title.readOnly = true;
-  })
-  $title_container.appendChild($block_title);
-
-  const $block_dragger = document.createElement("div");
-  $block_dragger.classList.add("block-dragger");
-  $block_dragger.innerHTML = `<img src="img/drag.svg" alt="drag"/>`;
-  $title_container.appendChild($block_dragger);
-
-  const $block_actions = document.createElement("div");
-  $block_actions.classList.add("link-block-actions");
-  const $action_delete = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  $action_delete.classList.add("link-block-delete");
-  $action_delete.setAttribute("viewBox", "0 0 1024 1024");
-  $action_delete.innerHTML = `<path d="M512 1024C229.238154 1024 0 794.761846 0 512S229.238154 0 512 0s512 229.238154 512 512-229.238154 512-512 512z m236.307692-551.384615H551.384615V275.692308a39.384615 39.384615 0 1 0-78.76923 0v196.923077H275.692308a39.384615 39.384615 0 1 0 0 78.76923h196.923077v196.923077a39.384615 39.384615 0 1 0 78.76923 0V551.384615h196.923077a39.384615 39.384615 0 0 0 0-78.76923z"/>`;
-  $action_delete.addEventListener("click", () => {
-    console.log(`delete block: ${index}`);
-  });
-  $block_actions.appendChild($action_delete);
-  const $action_collapse = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  $action_collapse.classList.add("link-block-collapse");
-  $action_collapse.setAttribute("viewBox", "0 0 1024 1024");
-  $action_collapse.innerHTML = `<path d="M758.613333 465.493333l-221.013333 235.52a35.84 35.84 0 0 1-52.48 0L264.533333 465.066667a35.84 35.84 0 1 1 52.48-49.066667L512 623.786667l194.56-207.36a35.84 35.84 0 1 1 52.48 49.066666zM512 0a512 512 0 1 0 512 512A512 512 0 0 0 512 0z"/>`;
-  $action_collapse.addEventListener("click", () => {
-    const shown = $block_container.classList.contains("expand");
-    if (shown) {
-      $block_container.classList.remove("expand");
-      $block_container.classList.add("collapse");
-    } else {
-      $block_container.classList.remove("collapse");
-      $block_container.classList.add("expand");
-    }
-    TinManager.collapse({ type: "one", index: index, status: shown ? 0 : 1 });
-  });
-  $block_actions.appendChild($action_collapse);
-  $title_container.appendChild($block_actions);
-  $block_container.appendChild($title_container);
-
-  const $links = document.createElement("div");
-  $links.classList.add("links");
-  for (let i = 0; i < links.length; ++i) {
-    $links.appendChild(createLink(index, i, links[i]));
-  }
-  $links.appendChild(createLinkAdd(index));
-  $block_container.appendChild($links);
+  $links.appendChild($add);
   new Sortable($links, {
     group: "shared",
-    animation: 500,
+    animation: 400,
     ghostClass: "sortable-ghost",
     draggable: ".link",
     handle: ".link",
     onEnd: handleLinkSortEnd
   });
+}
 
-  return $block_container;
+function unshiftGroup(group) {
+  const [info, ...links] = group;
+  let [collapse, name] = info;
+
+  const $group = document.createElement("div");
+  $group.classList.add("link-group-container");
+  const control_class = collapse === 1 ? "collapse" : "expand";
+  $group.classList.add(control_class);
+
+  const $title = document.createElement("div");
+  $title.classList.add("link-group-title-container");
+  const $input = document.createElement("input");
+  $input.classList.add("link-group-title");
+  $input.setAttribute("type", "text");
+  $input.setAttribute("placeholder", "[双击修改]");
+  $input.value = name || "";
+  $input.readOnly = true;
+  $input.addEventListener("dblclick", () => {
+    $input.readOnly = false;
+  });
+  $input.addEventListener("blur", () => {
+    $input.readOnly = true;
+    if ($input.value === "") {
+      $input.value = name;
+      return TinAlert.warn("分组名不可为空");
+    }
+    if ($input.value === name) return;
+    name = $input.value;
+    TinManager.groupRename(
+      childIndex($LinkGroups, $group),
+      name
+    ).catch(err => TinAlert.warn(err));
+  });
+  $title.appendChild($input);
+
+  const $dragger = document.createElement("div");
+  $dragger.classList.add("group-dragger");
+  $dragger.innerHTML = `<img src="img/drag.svg" alt="drag"/>`;
+  $title.appendChild($dragger);
+
+  const $actions = document.createElement("div");
+  $actions.classList.add("link-group-actions");
+  const $delete = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  $delete.classList.add("link-group-delete");
+  $delete.setAttribute("viewBox", "0 0 1024 1024");
+  $delete.innerHTML = `<path d="M512 1024C229.238154 1024 0 794.761846 0 512S229.238154 0 512 0s512 229.238154 512 512-229.238154 512-512 512z m236.307692-551.384615H551.384615V275.692308a39.384615 39.384615 0 1 0-78.76923 0v196.923077H275.692308a39.384615 39.384615 0 1 0 0 78.76923h196.923077v196.923077a39.384615 39.384615 0 1 0 78.76923 0V551.384615h196.923077a39.384615 39.384615 0 0 0 0-78.76923z"/>`;
+  $delete.addEventListener("click", () => {
+    TinConfirm.show({
+      text: `是否确认删除【${name}】`
+    }).yes(() => {
+      $group.remove();
+      TinManager.groupDelete(childIndex($LinkGroups, $group)).catch(err => TinAlert.warn(err));
+    });
+  });
+  $actions.appendChild($delete);
+  const $collapse = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  $collapse.classList.add("link-group-collapse");
+  $collapse.setAttribute("viewBox", "0 0 1024 1024");
+  $collapse.innerHTML = `<path d="M758.613333 465.493333l-221.013333 235.52a35.84 35.84 0 0 1-52.48 0L264.533333 465.066667a35.84 35.84 0 1 1 52.48-49.066667L512 623.786667l194.56-207.36a35.84 35.84 0 1 1 52.48 49.066666zM512 0a512 512 0 1 0 512 512A512 512 0 0 0 512 0z"/>`;
+  $collapse.addEventListener("click", () => {
+    const shown = $group.classList.contains("expand");
+    if (shown) {
+      $group.classList.remove("expand");
+      $group.classList.add("collapse");
+    } else {
+      $group.classList.remove("collapse");
+      $group.classList.add("expand");
+    }
+    const gid = childIndex($LinkGroups, $group);
+    TinManager.collapse({ type: "one", index: gid, status: shown ? 0 : 1 });
+  });
+  $actions.appendChild($collapse);
+  $title.appendChild($actions);
+  $group.appendChild($title);
+
+  const $links = document.createElement("div");
+  $links.classList.add("links");
+  links.forEach(link => appendLink($group, $links, link));
+  appendLinkAdd($group, $links);
+  $group.appendChild($links);
+
+  if ($LinkGroups.children.length === 0) {
+    $LinkGroups.appendChild($group);
+  } else {
+    $LinkGroups.insertBefore($group, $LinkGroups.children[0]);
+  }
 }
 
 function handleLinkSortEnd(event) {
@@ -391,35 +438,42 @@ function handleLinkSortEnd(event) {
     return;
   }
 
-  const from = Array.from($LinkBlocks.children).indexOf(event.from.parentNode);
-  const to = Array.from($LinkBlocks.children).indexOf(event.to.parentNode);
+  const $links = event.to.parentNode.querySelector(".links");
+  if ($links.children.length === 2) {
+    const $add = $links.children[0];
+    $add.remove();
+    $links.appendChild($add);
+    event.newIndex--;
+  }
+  const from = Array.from($LinkGroups.children).indexOf(event.from.parentNode);
+  const to = Array.from($LinkGroups.children).indexOf(event.to.parentNode);
 
-  console.log({
+  TinManager.rank({
     type: "item",
     data: [from, event.oldIndex, to, event.newIndex]
   });
 }
 
-function handleBlockSortEnd(event) {
+function handleGroupSortEnd(event) {
   if (event.oldIndex === event.newIndex) {
     return;
   }
 
-  console.log({
-    type: "block",
+  TinManager.rank({
+    type: "group",
     data: [event.oldIndex, event.newIndex]
   });
 }
 
-function linkBlocks() {
-  $LinkBlocks.innerHTML = "";
-  const $action_block_add = document.querySelector("#link-block-add");
-  const $action_blocks_collapse = document.querySelector("#link-blocks-collapse");
-  $action_block_add.addEventListener("click", () => {
-    console.log("add new block");
+function linkGroups() {
+  $LinkGroups.innerHTML = "";
+  document.querySelector("#link-group-add").addEventListener("click", () => {
+    const name = "未命名分组" + ($LinkGroups.children.length + 1);
+    unshiftGroup([[0, name]]);
+    TinManager.groupAdd(name).catch(err => TinAlert.warn(err));
   });
-  $action_blocks_collapse.addEventListener("click", () => {
-    const $expanded_list = document.querySelectorAll(".link-block-container.expand");
+  document.querySelector("#link-groups-collapse").addEventListener("click", () => {
+    const $expanded_list = document.querySelectorAll(".link-group-container.expand");
     if ($expanded_list.length > 0) {
       for (let i = 0; i < $expanded_list.length; ++i) {
         $expanded_list[i].classList.remove("expand");
@@ -427,7 +481,7 @@ function linkBlocks() {
       }
       TinManager.collapse({ type: "all", status: 0 });
     } else {
-      const $collapsed_list = document.querySelectorAll(".link-block-container.collapse");
+      const $collapsed_list = document.querySelectorAll(".link-group-container.collapse");
       for (let i = 0; i < $collapsed_list.length; ++i) {
         $collapsed_list[i].classList.remove("collapse");
         $collapsed_list[i].classList.add("expand");
@@ -436,18 +490,15 @@ function linkBlocks() {
     }
   });
   TinManager.detail().then(detail => {
-    SetEngine(detail[0]);
-    $LinkBlocks.innerHTML = "";
-    for (let index = 1; index < detail.length; ++index) {
-      const [info, ...links] = detail[index];
-      const $block = createBlock(index, info, links);
-      $LinkBlocks.appendChild($block);
-    }
-    new Sortable($LinkBlocks, {
-      animation: 500,
+    const [engine, ...groups] = detail;
+    setEngine(engine);
+    $LinkGroups.innerHTML = "";
+    groups.forEach(group => unshiftGroup(group));
+    new Sortable($LinkGroups, {
+      animation: 400,
       ghostClass: "sortable-ghost",
-      handle: ".block-dragger",
-      onEnd: handleBlockSortEnd
+      handle: ".group-dragger",
+      onEnd: handleGroupSortEnd
     });
   }).catch(err => TinAlert.warn(err));
 }
@@ -457,5 +508,5 @@ window.onload = function () {
   loginBtn();
   engines();
   search();
-  linkBlocks();
+  linkGroups();
 }

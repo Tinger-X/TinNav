@@ -78,7 +78,7 @@ class LocalDetail {
   constructor() {
     this.#Data = JSON.parse(localStorage.getItem(this.#Key) || `["bing"]`);
   }
-  all() {
+  detail() {
     return this.#Data;
   }
   update(data) {
@@ -94,10 +94,28 @@ class LocalDetail {
     this.#Data[0] = engine;
     localStorage.setItem(this.#Key, JSON.stringify(this.#Data));
   }
+  rank(opt) {
+    
+  }
   collapse(opt) {
 
   }
-  addBlock() {
-    // TODO
+  groupAdd(name) {
+
+  }
+  groupRename(gid, name) {
+
+  }
+  groupDelete(gid) {
+
+  }
+  linkAdd(info, gid) {
+
+  }
+  linkEdit(info, gid, lid) {
+
+  }
+  linkDelete(gid, lid) {
+
   }
 }
