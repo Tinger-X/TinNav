@@ -12,7 +12,7 @@ const $Engine = document.querySelector("#engine"),
 const TinAlert = new Alert("#alert"),
   TinConfirm = new Confirm("#confirm"),
   TinDetail = new Detail("#link-detail-layer"),
-  TinManager = new Manager("http://localhost:8787", "Tin-Nav-Token");  // https://nav-api.tinger.host
+  TinManager = new Manager("https://nav-api.tinger.host", "Tin-Nav-Token");  // https://nav-api.tinger.host
 
 function setEngine(key, update = false) {
   if (EngineConf._R_[1] === key) return;
