@@ -71,14 +71,11 @@ class Manager {
       }).catch(err => rej(err));
     });
   }
-  // TODO
   rank(opt) {
-    console.log("rank:", opt);
     this.#Detail.rank(opt);
     this.#Network.rank(opt);
   }
   collapse(opt) {
-    console.log("collapse:", opt);
     this.#Detail.collapse(opt);
     this.#Network.collapse(opt);
   }
@@ -87,10 +84,12 @@ class Manager {
     return this.#Network.groupAdd(name);
   }
   groupRename(gid, name) {
+    console.log(`rename: ${gid} => ${name}`);
     this.#Detail.groupRename(gid, name);
     return this.#Network.groupRename(gid, name);
   }
   groupDelete(gid) {
+    console.log(`delete group[${gid}]`);
     this.#Detail.groupDelete(gid);
     return this.#Network.groupDelete(gid);
   }
@@ -103,6 +102,7 @@ class Manager {
     return this.#Network.linkEdit(info, gid, lid);
   }
   linkDelete(gid, lid) {
+    console.log(`link delete: ${gid}, ${lid}`);
     this.#Detail.linkDelete(gid, lid);
     return this.#Network.linkDelete(gid, lid);
   }

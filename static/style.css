@@ -585,11 +585,14 @@ body::-webkit-scrollbar {
   margin-top: 2px;
 }
 
+#link-groups:not(:has(.sortable-chosen))>.link-group-container{
+  transition: all var(--time-slow);
+}
+
 .link-group-container {
   width: 100%;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   margin-bottom: 10px;
-  transition: all var(--time-slow);
 }
 
 .link-group-title-container {

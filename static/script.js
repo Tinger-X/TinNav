@@ -12,19 +12,40 @@ const $Engine = document.querySelector("#engine"),
 const TinAlert = new Alert("#alert"),
   TinConfirm = new Confirm("#confirm"),
   TinDetail = new Detail("#link-detail-layer"),
-  TinManager = new Manager("https://nav-api.tinger.host", "Tin-Nav-Token");
+  TinManager = new Manager("http://localhost:8787", "Tin-Nav-Token");  // https://nav-api.tinger.host
 
 function setEngine(key, update = false) {
   if (EngineConf._R_[1] === key) return;
+  const old = EngineConf._R_[1];
   $Engine.setAttribute("src", `img/${key}.svg`);
   $Engine.setAttribute("alt", key);
   EngineConf._R_ = [EngineConf[key][0], key];
   $SearchContent.setAttribute("placeholder", EngineConf[key][1]);
-  if (update) TinManager.setEngine(key).catch(err => TinAlert.warn(err));
+  if (update) {
+    TinManager.setEngine(key).catch(err => {
+      TinAlert.warn(err);
+      $Engine.setAttribute("src", `img/${old}.svg`);
+      $Engine.setAttribute("alt", old);
+      EngineConf._R_ = [EngineConf[old][0], old];
+      $SearchContent.setAttribute("placeholder", EngineConf[old][1]);
+    });
+  }
 }
 
 function childIndex($parent, $child) {
   return Array.from($parent.children).indexOf($child);
+}
+
+function groupIndex($group) {
+  return childIndex($group.parentNode, $group);
+}
+
+function linkGroupIndex($link) {
+  return groupIndex($link.parentNode.parentNode);
+}
+
+function linkIndex($link) {
+  return childIndex($link.parentNode, $link);
 }
 
 function slideBar() {
@@ -268,9 +289,12 @@ function appendLink($group, $links, info) {
       text: `是否确认删除【${info[0]}】`
     }).yes(() => {
       TinManager.linkDelete(
-        childIndex($LinkGroups, $group),
-        childIndex($links, $link)
-      ).catch(err => TinAlert.warn(err));
+        linkGroupIndex($link),
+        linkIndex($link)
+      ).catch(err => {
+        TinAlert.warn(err);
+        $links.insertBefore($link, $links.children[0]);
+      });
       $link.remove();
     });
   });
@@ -298,18 +322,25 @@ function appendLink($group, $links, info) {
   $edit.addEventListener("click", e => {
     e.stopPropagation();
     TinDetail.edit(info).then(res => {
-      info = res;
-      $name.innerText = res[0];
-      $icon.setAttribute("src", res[2]);
+      const old = info;
       TinManager.linkEdit(
         res,
-        childIndex($LinkGroups, $group),
-        childIndex($links, $link)
-      ).catch(err => TinAlert.warn(err));
+        linkGroupIndex($link),
+        linkIndex($link)
+      ).catch(err => {
+        TinAlert.warn(err);
+        info = old;
+        $name.innerText = info[0];
+        $icon.setAttribute("src", info[2]);
+      });
+      info = res;
+      $name.innerText = info[0];
+      $icon.setAttribute("src", info[2]);
     });
   });
   $link.addEventListener("click", () => window.open(info[1], "_blank"));
   $links.appendChild($link);
+  return $link;
 }
 
 function appendLinkAdd($group, $links) {
@@ -329,9 +360,12 @@ function appendLinkAdd($group, $links) {
   $add.addEventListener("click", () => {
     TinDetail.add().then(info => {
       $add.remove();
-      appendLink($group, $links, info);
+      const $link = appendLink($group, $links, info);
       $links.appendChild($add);
-      TinManager.linkAdd(info, childIndex($LinkGroups, $group)).catch(err => TinAlert.warn(err));
+      TinManager.linkAdd(info, groupIndex($group)).catch(err => {
+        TinAlert.warn(err);
+        $link.remove();
+      });
     });
   });
   $links.appendChild($add);
@@ -372,11 +406,16 @@ function unshiftGroup(group) {
       return TinAlert.warn("分组名不可为空");
     }
     if ($input.value === name) return;
+    const old = name;
     name = $input.value;
     TinManager.groupRename(
-      childIndex($LinkGroups, $group),
+      groupIndex($group),
       name
-    ).catch(err => TinAlert.warn(err));
+    ).catch(err => {
+      TinAlert.warn(err);
+      name = old;
+      $input.value = old;
+    });
   });
   $title.appendChild($input);
 
@@ -395,8 +434,17 @@ function unshiftGroup(group) {
     TinConfirm.show({
       text: `是否确认删除【${name}】`
     }).yes(() => {
+      TinManager.groupDelete(
+        groupIndex($group)
+      ).catch(err => {
+        TinAlert.warn(err);
+        if ($LinkGroups.children.length === 0) {
+          $LinkGroups.appendChild($group);
+        } else {
+          $LinkGroups.insertBefore($group, $LinkGroups.children[0]);
+        }
+      });
       $group.remove();
-      TinManager.groupDelete(childIndex($LinkGroups, $group)).catch(err => TinAlert.warn(err));
     });
   });
   $actions.appendChild($delete);
@@ -413,8 +461,7 @@ function unshiftGroup(group) {
       $group.classList.remove("collapse");
       $group.classList.add("expand");
     }
-    const gid = childIndex($LinkGroups, $group);
-    TinManager.collapse({ type: "one", index: gid, status: shown ? 0 : 1 });
+    TinManager.collapse({ type: "one", gid: groupIndex($group), status: shown ? 1 : 0 });
   });
   $actions.appendChild($collapse);
   $title.appendChild($actions);
@@ -431,6 +478,7 @@ function unshiftGroup(group) {
   } else {
     $LinkGroups.insertBefore($group, $LinkGroups.children[0]);
   }
+  return $group;
 }
 
 function handleLinkSortEnd(event) {
@@ -469,8 +517,11 @@ function linkGroups() {
   $LinkGroups.innerHTML = "";
   document.querySelector("#link-group-add").addEventListener("click", () => {
     const name = "未命名分组" + ($LinkGroups.children.length + 1);
-    unshiftGroup([[0, name]]);
-    TinManager.groupAdd(name).catch(err => TinAlert.warn(err));
+    const $group = unshiftGroup([[0, name]]);
+    TinManager.groupAdd(name).catch(err => {
+      TinAlert.warn(err);
+      $group.remove();
+    });
   });
   document.querySelector("#link-groups-collapse").addEventListener("click", () => {
     const $expanded_list = document.querySelectorAll(".link-group-container.expand");
@@ -479,21 +530,21 @@ function linkGroups() {
         $expanded_list[i].classList.remove("expand");
         $expanded_list[i].classList.add("collapse");
       }
-      TinManager.collapse({ type: "all", status: 0 });
+      TinManager.collapse({ type: "all", status: 1 });
     } else {
       const $collapsed_list = document.querySelectorAll(".link-group-container.collapse");
       for (let i = 0; i < $collapsed_list.length; ++i) {
         $collapsed_list[i].classList.remove("collapse");
         $collapsed_list[i].classList.add("expand");
       }
-      TinManager.collapse({ type: "all", status: 1 });
+      TinManager.collapse({ type: "all", status: 0 });
     }
   });
   TinManager.detail().then(detail => {
     const [engine, ...groups] = detail;
     setEngine(engine);
     $LinkGroups.innerHTML = "";
-    groups.forEach(group => unshiftGroup(group));
+    groups.forEach(group => group.length && unshiftGroup(group));
     new Sortable($LinkGroups, {
       animation: 400,
       ghostClass: "sortable-ghost",

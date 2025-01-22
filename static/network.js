@@ -1,8 +1,8 @@
 class NetWork {
   #Server = null;
   #Header = {};
-  #authed() {
-    return JSON.stringify(this.#Header) !== "{}";
+  #noAuth() {
+    return JSON.stringify(this.#Header) === "{}";
   }
   constructor(server = null) {
     this.#Server = server;
@@ -12,16 +12,6 @@ class NetWork {
   }
   setHeader(header) {
     this.#Header = header;
-  }
-  init() {
-    return new PromiseEx((acc, rej) => {
-      fetch(`${this.#Server}/init`, {
-        method: "POST",
-        headers: this.#Header
-      }).then(res => res.json()).then(res => {
-        res.code === 200 ? acc(res.data) : rej(res.msg);
-      });
-    });
   }
   detail() {
     return new PromiseEx((acc, rej) => {
@@ -35,6 +25,9 @@ class NetWork {
   }
   setEngine(engine) {
     return new PromiseEx((acc, rej) => {
+      if (this.#noAuth()) {
+        return rej("auth failed");
+      }
       fetch(`${this.#Server}/engine?target=${engine}`, {
         method: "POST",
         headers: this.#Header
@@ -49,10 +42,17 @@ class NetWork {
     });
   }
   rank(opt) {
-
+    if (this.#noAuth()) {
+      return;
+    }
+    fetch(`${this.#Server}/rank`, {
+      method: "POST",
+      headers: this.#Header,
+      body: JSON.stringify(opt)
+    });
   }
   collapse(opt) {
-    if (JSON.stringify(this.#Header) === "{}") {
+    if (this.#noAuth()) {
       return;
     }
     fetch(`${this.#Server}/group/collapse`, {
@@ -62,33 +62,99 @@ class NetWork {
     });
   }
   groupAdd(name) {
-    return new PromiseEx((acc, rej) => {
-
+    return new PromiseEx((_, rej) => {
+      if (this.#noAuth()) {
+        return rej("仅登录后才能新建分组");
+      }
+      fetch(
+        "/group/add",
+        {
+          method: "POST",
+          body: name
+        }
+      ).then(res => res.json()).then(res => {
+        if (res.code !== 200) rej(res.msg);
+      }).catch(e => rej(e.message));
     });
   }
   groupRename(gid, name) {
-    return new PromiseEx((acc, rej) => {
-
+    return new PromiseEx((_, rej) => {
+      if (this.#noAuth()) {
+        return rej("仅登录后才能命名分组");
+      }
+      fetch(
+        "/group/rename",
+        {
+          method: "POST",
+          body: JSON.stringify({ gid, name })
+        }
+      ).then(res => res.json()).then(res => {
+        if (res.code !== 200) rej(res.msg);
+      }).catch(e => rej(e.message));
     });
   }
   groupDelete(gid) {
-    return new PromiseEx((acc, rej) => {
-
+    return new PromiseEx((_, rej) => {
+      if (this.#noAuth()) {
+        return rej("仅登录后才能删除分组");
+      }
+      fetch(
+        "/group/delete",
+        {
+          method: "POST",
+          body: `${gid}`
+        }
+      ).then(res => res.json()).then(res => {
+        if (res.code !== 200) rej(res.msg);
+      }).catch(e => rej(e.message));
     });
   }
   linkAdd(info, gid) {
-    return new PromiseEx((acc, rej) => {
-
+    return new PromiseEx((_, rej) => {
+      if (this.#noAuth()) {
+        return rej("仅登录后才能添加快捷方式");
+      }
+      fetch(
+        "/link/add",
+        {
+          method: "POST",
+          body: JSON.stringify({ gid, info })
+        }
+      ).then(res => res.json()).then(res => {
+        if (res.code !== 200) rej(res.msg);
+      }).catch(e => rej(e.message));
     });
   }
   linkEdit(info, gid, lid) {
-    return new PromiseEx((acc, rej) => {
-
+    return new PromiseEx((_, rej) => {
+      if (this.#noAuth()) {
+        return rej("仅登录后才能添加快捷方式");
+      }
+      fetch(
+        "/link/edit",
+        {
+          method: "POST",
+          body: JSON.stringify({ gid, lid, info })
+        }
+      ).then(res => res.json()).then(res => {
+        if (res.code !== 200) rej(res.msg);
+      }).catch(e => rej(e.message));
     });
   }
   linkDelete(gid, lid) {
-    return new PromiseEx((acc, rej) => {
-
+    return new PromiseEx((_, rej) => {
+      if (this.#noAuth()) {
+        return rej("仅登录后才能添加快捷方式");
+      }
+      fetch(
+        "/link/delete",
+        {
+          method: "POST",
+          body: JSON.stringify({ gid, lid })
+        }
+      ).then(res => res.json()).then(res => {
+        if (res.code !== 200) rej(res.msg);
+      }).catch(e => rej(e.message));
     });
   }
 }
