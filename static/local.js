@@ -76,7 +76,6 @@ class LocalDetail {
   #Key = "_Local_Detail_";
   #Data = ["bing"];
   #write() {
-    console.log("write:", this.#Data);
     localStorage.setItem(this.#Key, JSON.stringify(this.#Data));
   }
   constructor() {
