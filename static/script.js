@@ -275,7 +275,7 @@ function search() {
   });
 }
 
-function appendLink($group, $links, info) {
+function createLink(info) {
   const $link = document.createElement("div");
   $link.classList.add("link");
 
@@ -295,7 +295,6 @@ function appendLink($group, $links, info) {
         linkIndex($link)
       ).catch(err => {
         TinAlert.warn(err);
-        $links.insertBefore($link, $links.children[0]);
       });
       $link.remove();
     });
@@ -341,7 +340,7 @@ function appendLink($group, $links, info) {
     });
   });
   $link.addEventListener("click", () => window.open(info[1], "_blank"));
-  $links.appendChild($link);
+
   return $link;
 }
 
@@ -362,11 +361,11 @@ function appendLinkAdd($group, $links) {
   $add.addEventListener("click", () => {
     TinDetail.add().then(info => {
       $add.remove();
-      const $link = appendLink($group, $links, info);
+      const $link = createLink(info);
+      $links.appendChild($link);
       $links.appendChild($add);
       TinManager.linkAdd(info, groupIndex($group)).catch(err => {
         TinAlert.warn(err);
-        $link.remove();
       });
     });
   });
@@ -381,7 +380,7 @@ function appendLinkAdd($group, $links) {
   });
 }
 
-function appendGroup(group) {
+function createGroup(group) {
   const [info, ...links] = group;
   let [collapse, name] = info;
 
@@ -440,7 +439,6 @@ function appendGroup(group) {
         groupIndex($group)
       ).catch(err => {
         TinAlert.warn(err);
-        $LinkGroups.appendChild($group);
       });
       $group.remove();
     });
@@ -467,11 +465,13 @@ function appendGroup(group) {
 
   const $links = document.createElement("div");
   $links.classList.add("links");
-  links.forEach(link => appendLink($group, $links, link));
+  links.forEach(link => {
+    const $link = createLink(link);
+    $links.appendChild($link);
+  });
   appendLinkAdd($group, $links);
   $group.appendChild($links);
 
-  $LinkGroups.appendChild($group);
   return $group;
 }
 
@@ -511,10 +511,15 @@ function linkGroups() {
   $LinkGroups.innerHTML = "";
   document.querySelector("#link-group-add").addEventListener("click", () => {
     const name = "未命名分组" + ($LinkGroups.children.length + 1);
-    const $group = appendGroup([[0, name]]);
+    const $group = createGroup([[0, name]]);
+    if ($LinkGroups.children.length === 0) {
+      $LinkGroups.appendChild($group);
+    } else {
+      $LinkGroups.insertBefore($group, $LinkGroups.children[0]);
+    }
+
     TinManager.groupAdd(name).catch(err => {
       TinAlert.warn(err);
-      $group.remove();
     });
   });
   document.querySelector("#link-groups-collapse").addEventListener("click", () => {
@@ -538,7 +543,10 @@ function linkGroups() {
     const [engine, ...groups] = detail;
     setEngine(engine);
     $LinkGroups.innerHTML = "";
-    groups.forEach(group => group.length && appendGroup(group));
+    groups.forEach(group => {
+      const $group = createGroup(group);
+      $LinkGroups.appendChild($group);
+    });
     new Sortable($LinkGroups, {
       animation: 400,
       ghostClass: "sortable-ghost",
