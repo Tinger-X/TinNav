@@ -35,8 +35,8 @@
             $detail.textContent = `【Detail】：${JSON.stringify(res.data.detail, null, 2)}`;
           } else {
             $msg.textContent = `【Error】：${res.msg}`;
-            $token.clear();
-            $detail.clear();
+            $token.textContent = "";
+            $detail.textContent = "";
           }
         });
       }

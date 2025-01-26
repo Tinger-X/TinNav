@@ -67,9 +67,10 @@ class NetWork {
         return rej("仅登录后才能新建分组");
       }
       fetch(
-        "/group/add",
+        `${this.#Server}/group/add`,
         {
           method: "POST",
+          headers: this.#Header,
           body: name
         }
       ).then(res => res.json()).then(res => {
@@ -83,9 +84,10 @@ class NetWork {
         return rej("仅登录后才能命名分组");
       }
       fetch(
-        "/group/rename",
+        `${this.#Server}/group/rename`,
         {
           method: "POST",
+          headers: this.#Header,
           body: JSON.stringify({ gid, name })
         }
       ).then(res => res.json()).then(res => {
@@ -99,9 +101,10 @@ class NetWork {
         return rej("仅登录后才能删除分组");
       }
       fetch(
-        "/group/delete",
+        `${this.#Server}/group/delete`,
         {
           method: "POST",
+          headers: this.#Header,
           body: `${gid}`
         }
       ).then(res => res.json()).then(res => {
@@ -115,9 +118,10 @@ class NetWork {
         return rej("仅登录后才能添加快捷方式");
       }
       fetch(
-        "/link/add",
+        `${this.#Server}/link/add`,
         {
           method: "POST",
+          headers: this.#Header,
           body: JSON.stringify({ gid, info })
         }
       ).then(res => res.json()).then(res => {
@@ -128,12 +132,13 @@ class NetWork {
   linkEdit(info, gid, lid) {
     return new PromiseEx((_, rej) => {
       if (this.#noAuth()) {
-        return rej("仅登录后才能添加快捷方式");
+        return rej("仅登录后才能修改快捷方式");
       }
       fetch(
-        "/link/edit",
+        `${this.#Server}/link/edit`,
         {
           method: "POST",
+          headers: this.#Header,
           body: JSON.stringify({ gid, lid, info })
         }
       ).then(res => res.json()).then(res => {
@@ -144,12 +149,13 @@ class NetWork {
   linkDelete(gid, lid) {
     return new PromiseEx((_, rej) => {
       if (this.#noAuth()) {
-        return rej("仅登录后才能添加快捷方式");
+        return rej("仅登录后才能删除快捷方式");
       }
       fetch(
-        "/link/delete",
+        `${this.#Server}/link/delete`,
         {
           method: "POST",
+          headers: this.#Header,
           body: JSON.stringify({ gid, lid })
         }
       ).then(res => res.json()).then(res => {

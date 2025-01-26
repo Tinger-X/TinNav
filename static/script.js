@@ -5,14 +5,15 @@ const EngineConf = {
   google: ["https://www.google.com/search?q=", "咕噜咕噜~"]
 };
 
-const $Engine = document.querySelector("#engine"),
+const $Body = document.querySelector("body"),
+  $Engine = document.querySelector("#engine"),
   $SearchContent = document.querySelector("#search-content"),
   $LinkGroups = document.querySelector("#link-groups");
 
 const TinAlert = new Alert("#alert"),
   TinConfirm = new Confirm("#confirm"),
   TinDetail = new Detail("#link-detail-layer"),
-  TinManager = new Manager("https://nav-api.tinger.host", "Tin-Nav-Token");  // https://nav-api.tinger.host
+  TinManager = new Manager("https://nav-api.tinger.host", "Tin-Nav-Token");
 
 function setEngine(key, update = false) {
   if (EngineConf._R_[1] === key) return;
@@ -66,10 +67,11 @@ function slideBar() {
   });
 }
 
-function loginBtn() {
+function loginStatus() {
   const $loginBtn = document.querySelector("#login-btn");
+
   if (TinManager.loginStatus()) {
-    $loginBtn.classList.add("exit");
+    $Body.classList.add("user");
     $loginBtn.textContent = "退出登录";
   } else {
     $loginBtn.textContent = "点击登录";
@@ -77,13 +79,13 @@ function loginBtn() {
   $loginBtn.addEventListener("click", () => {
     if (TinManager.loginStatus()) {
       TinManager.logout();
-      $loginBtn.classList.remove("exit");
+      $Body.classList.remove("user");
       $loginBtn.textContent = "点击登录";
     } else {
       TinManager.oauthLogin(res => {
         if (res.code === 200) {
           TinAlert.info("登录成功");
-          $loginBtn.classList.add("exit");
+          $Body.classList.add("user");
           $loginBtn.textContent = "退出登录";
         } else {
           TinAlert.warn(res.msg);
@@ -379,7 +381,7 @@ function appendLinkAdd($group, $links) {
   });
 }
 
-function unshiftGroup(group) {
+function appendGroup(group) {
   const [info, ...links] = group;
   let [collapse, name] = info;
 
@@ -397,7 +399,7 @@ function unshiftGroup(group) {
   $input.value = name || "";
   $input.readOnly = true;
   $input.addEventListener("dblclick", () => {
-    $input.readOnly = false;
+    TinManager.loginStatus() && ($input.readOnly = false);
   });
   $input.addEventListener("blur", () => {
     $input.readOnly = true;
@@ -438,11 +440,7 @@ function unshiftGroup(group) {
         groupIndex($group)
       ).catch(err => {
         TinAlert.warn(err);
-        if ($LinkGroups.children.length === 0) {
-          $LinkGroups.appendChild($group);
-        } else {
-          $LinkGroups.insertBefore($group, $LinkGroups.children[0]);
-        }
+        $LinkGroups.appendChild($group);
       });
       $group.remove();
     });
@@ -473,11 +471,7 @@ function unshiftGroup(group) {
   appendLinkAdd($group, $links);
   $group.appendChild($links);
 
-  if ($LinkGroups.children.length === 0) {
-    $LinkGroups.appendChild($group);
-  } else {
-    $LinkGroups.insertBefore($group, $LinkGroups.children[0]);
-  }
+  $LinkGroups.appendChild($group);
   return $group;
 }
 
@@ -517,7 +511,7 @@ function linkGroups() {
   $LinkGroups.innerHTML = "";
   document.querySelector("#link-group-add").addEventListener("click", () => {
     const name = "未命名分组" + ($LinkGroups.children.length + 1);
-    const $group = unshiftGroup([[0, name]]);
+    const $group = appendGroup([[0, name]]);
     TinManager.groupAdd(name).catch(err => {
       TinAlert.warn(err);
       $group.remove();
@@ -544,7 +538,7 @@ function linkGroups() {
     const [engine, ...groups] = detail;
     setEngine(engine);
     $LinkGroups.innerHTML = "";
-    groups.forEach(group => group.length && unshiftGroup(group));
+    groups.forEach(group => group.length && appendGroup(group));
     new Sortable($LinkGroups, {
       animation: 400,
       ghostClass: "sortable-ghost",
@@ -556,7 +550,7 @@ function linkGroups() {
 
 window.onload = function () {
   slideBar();
-  loginBtn();
+  loginStatus();
   engines();
   search();
   linkGroups();

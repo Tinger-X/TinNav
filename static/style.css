@@ -233,7 +233,7 @@ body::-webkit-scrollbar {
   z-index: 7000;
 }
 
-#login-btn.exit {
+body.user #login-btn {
   background-color: #dc3545;
 }
 
@@ -241,7 +241,7 @@ body::-webkit-scrollbar {
   background-color: #218838;
 }
 
-#login-btn.exit:hover {
+body.user #login-btn:hover {
   background-color: #c82333;
 }
 
@@ -563,10 +563,17 @@ body::-webkit-scrollbar {
   transition: all var(--time-normal);
 }
 
+#link-group-add {
+  visibility: hidden;
+}
+
+body.user #link-group-add {
+  visibility: visible;
+}
+
 #link-group-add:hover {
   fill: #1AFA29;
 }
-
 
 .link-groups-container #link-groups-collapse {
   transform: rotateZ(90deg);
@@ -653,8 +660,13 @@ body::-webkit-scrollbar {
 }
 
 .link-group-delete {
+  visibility: hidden;
   fill: rgb(224, 16, 16);
   transform: rotateZ(45deg) scale(0.92);
+}
+
+body.user .link-group-delete {
+  visibility: visible;
 }
 
 .link-group-delete:hover {
@@ -738,19 +750,20 @@ body::-webkit-scrollbar {
   top: 0;
   left: 0;
   width: 100%;
-  display: none;
+  display: flex;
+  visibility: hidden;
   justify-content: space-between;
   align-items: center;
   padding: 6px 8px;
   z-index: 2000;
 }
 
-.link-group-container.expand .link:hover>.link-actions {
-  display: flex;
+body.user .link-group-container.expand .link:hover>.link-actions {
+  visibility: visible;
 }
 
 .link-group-container.collapse .link:hover>.link-actions {
-  display: none;
+  visibility: hidden;
 }
 
 .link-actions>svg {
@@ -790,11 +803,15 @@ body::-webkit-scrollbar {
   justify-content: center;
 }
 
+body.user .link-add {
+  display: flex;
+}
+
 .link-add {
   width: 108px;
   height: 118px;
   user-select: none;
-  display: flex;
+  display: none;
   align-items: center;
   cursor: pointer;
   transition: transform var(--time-fast);
