@@ -32,7 +32,7 @@ class Manager {
     if (this.#Token.valid()) {
       return acc(this.#Token.get());
     }
-    window.open(`https://wx-api.tinger.host/oauth?target=${window.location.href}`);
+    window.open(`https://iboxvv-jlmwoh-8010.app.cloudstudio.work/oauth?target=${window.location.href}`);
     this.#onLoginResult = fn;
   }
   logout() {
