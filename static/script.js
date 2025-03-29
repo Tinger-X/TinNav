@@ -15,6 +15,13 @@ const TinAlert = new Alert("#alert"),
   TinDetail = new Detail("#link-detail-layer"),
   TinManager = new Manager("https://nav-api.tinger.host", "Tin-Nav-Token");
 
+const DeTouchTimeout = 400;
+
+function clearTimer(timer) {
+  if (timer !== null) clearTimeout(timer);
+  return null;
+}
+
 function setEngine(key, update = false) {
   if (EngineConf._R_[1] === key) return;
   const old = EngineConf._R_[1];
@@ -96,7 +103,7 @@ function loginStatus() {
 }
 
 function engines() {
-  let timer = null;
+  let timer = null, show = false;
   const $engines = document.querySelectorAll(".engine:not(#engine)");
 
   $engines.forEach($eng => {
@@ -104,32 +111,35 @@ function engines() {
       setEngine(this.getAttribute("alt"), true);
     });
     $eng.addEventListener("mouseenter", function () {
-      if (timer !== null) {
-        clearTimeout(timer);
-        timer = null;
-      }
+      show = true;
+      timer = clearTimer(timer);
     });
     $eng.addEventListener("mouseleave", function () {
+      show = false;
+      timer = clearTimer(timer);
       timer = setTimeout(() => {
-        $engines.forEach($eng => $eng.classList.remove("show"));
+        show || $engines.forEach($eng => $eng.classList.remove("show"));
         timer = null;
-      }, 200);
+      }, DeTouchTimeout);
     });
   });
 
+  // TODO: 防止误触，search框也是
   $Engine.addEventListener("mouseenter", function () {
-    if (timer !== null) {
-      clearTimeout(timer);
+    show = true;
+    timer = clearTimer(timer);
+    timer = setTimeout(() => {
+      show && $engines.forEach($eng => $eng.classList.add("show"));
       timer = null;
-    } else {
-      $engines.forEach($eng => $eng.classList.add("show"));
-    }
+    }, DeTouchTimeout);
   });
   $Engine.addEventListener("mouseleave", function () {
+    show = false;
+    timer = clearTimer(timer);
     timer = setTimeout(() => {
-      $engines.forEach($eng => $eng.classList.remove("show"));
+      show || $engines.forEach($eng => $eng.classList.remove("show"));
       timer = null;
-    }, 500);
+    }, DeTouchTimeout);
   });
 }
 
@@ -170,27 +180,22 @@ function createRelate(local = true, text = "", fn) {
 }
 
 function search() {
-  let timer = null, compose = false, cache = "", show = false;
+  let network_timer = null, show_timer = null, compose = false, cache = "", show = false;
+  
   const $seach_img = document.querySelector("#search-image");
   const $relate_container = document.querySelector("#relate-container");
   const $local_relate = $relate_container.querySelector("#local-relate");
   const $engine_relate = $relate_container.querySelector("#engine-relate");
 
-  const clear_timer = () => {
-    if (timer !== null) {
-      clearTimeout(timer);
-      timer = null;
-    }
-  }
   const reset_timer = () => {
-    clear_timer();
+    network_timer = clearTimer(network_timer);
     const value = $SearchContent.value.trim();
     if (value === "") {
       return;
     }
-    timer = setTimeout(() => {
-      timer = null;
+    network_timer = setTimeout(() => {
       doRelate(EngineConf._R_[1], value);
+      network_timer = null;
     }, 500);
   }
 
@@ -217,8 +222,8 @@ function search() {
     }).catch(err => TinAlert.warn(err));
     $relate_container.classList.add("show");
   }
-  const doSearch = (val) => {  // 不传时为 undefined
-    clear_timer();
+  const doSearch = (val) => {  // 搜索候选内容（传入val）或者输入框内容（不传val）
+    network_timer = clearTimer(network_timer);
     const value = val || $SearchContent.value.trim();
     if (value === "") {
       return;
@@ -230,18 +235,21 @@ function search() {
   }
 
   const showRelate = () => {
-    if ($local_relate.childNodes.length !== 0 || $engine_relate.childNodes.length !== 0) {
-      show = true;
-      $relate_container.classList.add("show");
-    }
+    if ($local_relate.childNodes.length === 0 && $engine_relate.childNodes.length === 0) return;
+    show = true;
+    show_timer = clearTimer(show_timer);
+    show_timer = setTimeout(() => {
+      show && $relate_container.classList.add("show");
+      show_timer = null;
+    }, DeTouchTimeout);
   }
   const hideRelate = () => {
     show = false;
-    setTimeout(() => {
-      if (!show) {
-        $relate_container.classList.remove("show");
-      }
-    }, 200);
+    show_timer = clearTimer(show_timer);
+    show_timer = setTimeout(() => {
+      show || $relate_container.classList.remove("show");
+      show_timer = null;
+    }, DeTouchTimeout);
   }
 
   $seach_img.addEventListener("click", doSearch);
@@ -259,10 +267,7 @@ function search() {
     reset_timer();
   });
   $SearchContent.addEventListener("input", function () {
-    if (timer !== null) {
-      clearTimeout(timer);
-      timer = null;
-    }
+    network_timer = clearTimer(network_timer);
     if (compose) {
       return;
     }
